@@ -161,37 +161,37 @@
           </div>
 
           <div class="cards cards--services">
-            <article class="service-card reveal">
+            <article class="service-card reveal" data-service-id="neuro">
               <div class="service-card__icon">01</div>
               <h3>Нейрофотосессии</h3>
               <p>Образы, портреты и визуал для личного бренда, соцсетей и творческих проектов. Для блогеров, экспертов, мастеров и всех, кому нужны красивые фото без полноценной фотосессии.</p>
             </article>
 
-            <article class="service-card reveal">
+            <article class="service-card reveal" data-service-id="kids">
               <div class="service-card__icon">02</div>
               <h3>Детские нейрофотосессии</h3>
               <p>Нежные, атмосферные и сказочные образы для детей. Подходят для тех, кто хочет сохранить настроение и получить красивые кадры без сложной организации съёмки.</p>
             </article>
 
-            <article class="service-card reveal">
+            <article class="service-card reveal" data-service-id="product">
               <div class="service-card__icon">03</div>
               <h3>Предметная нейросъёмка товаров</h3>
               <p>Игрушки, украшения, одежда, товары ручной работы и другие вещи, которым нужна эффектная подача. Такой визуал помогает показать товар красиво, аккуратно и цепко.</p>
             </article>
 
-            <article class="service-card reveal">
+            <article class="service-card reveal" data-service-id="visuals">
               <div class="service-card__icon">04</div>
               <h3>ИИ-визуалы</h3>
               <p>Обложки для постов, сторис, иконки услуг, аватарки, обложки для карт Таро и метафорических карт. Всё, что помогает оформить блог, сообщество, продукт или проект стильно и цельно.</p>
             </article>
 
-            <article class="service-card reveal">
+            <article class="service-card reveal" data-service-id="clips">
               <div class="service-card__icon">05</div>
               <h3>ИИ-клипы</h3>
               <p>Короткие клипы с юмором, переходами, атмосферой или яркой подачей. Для контента, продвижения и публикаций, которые хочется досмотреть до конца.</p>
             </article>
 
-            <article class="service-card reveal">
+            <article class="service-card reveal" data-service-id="landing">
               <div class="service-card__icon">06</div>
               <h3>Лендинги и мини-решения</h3>
               <p>Простые лендинги и удобные мини-инструменты под задачу. Когда нужно не строить сложную систему, а быстро получить понятное и рабочее решение.</p>
@@ -391,6 +391,29 @@
     </div>
   </div>
 
+  <div class="pricing-modal" id="pricing-modal" hidden aria-modal="true" role="dialog" aria-label="Цены на услуги">
+    <div class="pricing-modal__backdrop" data-pricing-modal-close tabindex="-1"></div>
+    <div class="pricing-modal__panel">
+      <button type="button" class="pricing-modal__close" data-pricing-modal-close aria-label="Закрыть">
+        ×
+      </button>
+      <div class="pricing-modal__body">
+        <div class="section-kicker">Цены</div>
+        <h3 class="pricing-modal__title" id="pricing-modal-title"></h3>
+        <ul class="pricing-modal__list" id="pricing-modal-list"></ul>
+        <p class="pricing-modal__note" id="pricing-modal-note"></p>
+        <a
+          class="btn btn--primary pricing-modal__cta"
+          href="https://vk.com/im/convo/-229808351?entrypoint=community_page&tab=all"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Написать в ВК
+        </a>
+      </div>
+    </div>
+  </div>
+
   <script>
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -415,7 +438,65 @@
 
     const shortModal = document.getElementById('short-modal');
     const shortModalBody = document.getElementById('short-modal-body');
+    const pricingModal = document.getElementById('pricing-modal');
+    const pricingModalTitle = document.getElementById('pricing-modal-title');
+    const pricingModalList = document.getElementById('pricing-modal-list');
+    const pricingModalNote = document.getElementById('pricing-modal-note');
     const previewVideo = document.querySelector('.hero-short--1 .hero-short__media');
+    const servicePrices = {
+      neuro: {
+        title: 'Нейрофотосессии',
+        items: [
+          'Мини — 4 фото — 1000 ₽',
+          'Стандарт — 10 фото — 2500 ₽',
+          'Плюс — 20 фото — 4500 ₽'
+        ],
+        note: ''
+      },
+      kids: {
+        title: 'Детские нейрофотосессии',
+        items: [
+          'Мини — 4 фото — 1000 ₽',
+          'Стандарт — 10 фото — 2500 ₽',
+          'Плюс — 20 фото — 4500 ₽'
+        ],
+        note: ''
+      },
+      product: {
+        title: 'Предметная нейросъёмка товаров',
+        items: [
+          '3 фото — 690 ₽',
+          '6 фото — 1490 ₽',
+          '12 фото — 2900 ₽'
+        ],
+        note: ''
+      },
+      visuals: {
+        title: 'ИИ-визуалы',
+        items: [
+          '1 шт — 500 ₽',
+          '3 шт — 1425 ₽',
+          '5 шт — 2350 ₽',
+          '7 шт — 2750 ₽',
+          '10 шт — 3750 ₽',
+          '20 шт — 6250 ₽',
+          '30 шт — 8700 ₽',
+          '40 шт — 11200 ₽',
+          '50 шт — 13500 ₽'
+        ],
+        note: ''
+      },
+      clips: {
+        title: 'ИИ-клипы',
+        items: ['Стоимость — от 1000 ₽'],
+        note: 'Итоговая цена зависит от сложности и длительности клипа.'
+      },
+      landing: {
+        title: 'Лендинги и мини-решения',
+        items: ['Стоимость — от 5000 ₽'],
+        note: 'Итоговая цена зависит от сложности задачи.'
+      }
+    };
 
     const pausePreviewVideo = () => {
       if (previewVideo && previewVideo.tagName === 'VIDEO') {
@@ -466,11 +547,40 @@
       playPreviewVideo();
     };
 
+    const openPricingModal = (serviceId) => {
+      const data = servicePrices[serviceId];
+      if (!data || !pricingModal || !pricingModalTitle || !pricingModalList || !pricingModalNote) return;
+      pricingModalTitle.textContent = data.title;
+      pricingModalList.innerHTML = '';
+      data.items.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        pricingModalList.appendChild(li);
+      });
+      pricingModalNote.textContent = data.note || '';
+      pricingModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closePricingModal = () => {
+      if (!pricingModal) return;
+      pricingModal.hidden = true;
+      if (shortModal && !shortModal.hidden) return;
+      document.body.style.overflow = '';
+    };
+
     document.querySelectorAll('.hero-short').forEach((btn) => {
       btn.addEventListener('click', () => {
         const kind = btn.getAttribute('data-short-kind');
         const src = btn.getAttribute('data-short-src');
         if (kind && src) openShortModal(kind, src);
+      });
+    });
+
+    document.querySelectorAll('.service-card[data-service-id]').forEach((card) => {
+      card.addEventListener('click', () => {
+        const serviceId = card.getAttribute('data-service-id');
+        if (serviceId) openPricingModal(serviceId);
       });
     });
 
@@ -583,8 +693,13 @@
       el.addEventListener('click', closeShortModal);
     });
 
+    document.querySelectorAll('[data-pricing-modal-close]').forEach((el) => {
+      el.addEventListener('click', closePricingModal);
+    });
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && shortModal && !shortModal.hidden) closeShortModal();
+      if (e.key === 'Escape' && pricingModal && !pricingModal.hidden) closePricingModal();
     });
 
     if (previewVideo && previewVideo.tagName === 'VIDEO' && !reduceMotion) {
