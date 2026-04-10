@@ -1009,7 +1009,8 @@ p,h1,h2,h3{margin:0}
   scrollbar-color:rgba(216,210,240,0.35) transparent;
   cursor:grab;
   user-select:none;
-  touch-action:pan-y;
+  touch-action:pan-x pan-y;
+  -webkit-overflow-scrolling:touch;
 }
 
 .case-gallery.is-dragging{
@@ -1041,6 +1042,9 @@ p,h1,h2,h3{margin:0}
   object-position:center;
   display:block;
   cursor:zoom-in;
+  user-select:none;
+  -webkit-user-drag:none;
+  -webkit-touch-callout:none;
 }
 
 .case-gallery__item video{
@@ -1050,6 +1054,9 @@ p,h1,h2,h3{margin:0}
   object-position:center;
   display:block;
   cursor:zoom-in;
+  user-select:none;
+  -webkit-user-drag:none;
+  -webkit-touch-callout:none;
 }
 
 .case-gallery::-webkit-scrollbar{

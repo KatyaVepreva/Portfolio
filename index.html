@@ -628,17 +628,61 @@
 
     document.querySelectorAll('.case-gallery').forEach((gallery) => {
       initInfiniteCaseGallery(gallery);
+      gallery.querySelectorAll('img, video').forEach((media) => {
+        media.setAttribute('draggable', 'false');
+      });
 
       let isPointerDown = false;
       let dragMoved = false;
       let startX = 0;
       let startScrollLeft = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartScrollLeft = 0;
+      let lastClientX = 0;
+      let lastTs = 0;
+      let velocityX = 0;
+      let momentumRaf = 0;
+      const stopMomentum = () => {
+        if (momentumRaf) {
+          cancelAnimationFrame(momentumRaf);
+          momentumRaf = 0;
+        }
+      };
+      const startMomentum = () => {
+        stopMomentum();
+        if (Math.abs(velocityX) < 0.12) return;
+        const step = () => {
+          gallery.scrollLeft -= velocityX * 18;
+          velocityX *= 0.94;
+          if (Math.abs(velocityX) > 0.06) {
+            momentumRaf = requestAnimationFrame(step);
+          } else {
+            stopMomentum();
+          }
+        };
+        momentumRaf = requestAnimationFrame(step);
+      };
+
+      gallery.addEventListener('wheel', (e) => {
+        stopMomentum();
+        const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+        if (!delta) return;
+        e.preventDefault();
+        gallery.scrollLeft += delta;
+      }, { passive: false });
 
       gallery.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        stopMomentum();
         isPointerDown = true;
         dragMoved = false;
         startX = e.clientX;
         startScrollLeft = gallery.scrollLeft;
+        lastClientX = e.clientX;
+        lastTs = performance.now();
+        velocityX = 0;
         gallery.classList.add('is-dragging');
         gallery.setPointerCapture(e.pointerId);
       });
@@ -646,8 +690,15 @@
       gallery.addEventListener('pointermove', (e) => {
         if (!isPointerDown) return;
         const delta = e.clientX - startX;
-        if (Math.abs(delta) > 4) dragMoved = true;
-        gallery.scrollLeft = startScrollLeft - delta;
+        if (Math.abs(delta) > 3) dragMoved = true;
+        gallery.scrollLeft = startScrollLeft - (delta * 1.45);
+        const now = performance.now();
+        const dt = now - lastTs;
+        if (dt > 0) {
+          velocityX = (e.clientX - lastClientX) / dt;
+          lastClientX = e.clientX;
+          lastTs = now;
+        }
       });
 
       const stopDragging = (e) => {
@@ -657,11 +708,46 @@
         if (e && typeof e.pointerId === 'number' && gallery.hasPointerCapture(e.pointerId)) {
           gallery.releasePointerCapture(e.pointerId);
         }
+        startMomentum();
       };
 
       gallery.addEventListener('pointerup', stopDragging);
       gallery.addEventListener('pointercancel', stopDragging);
       gallery.addEventListener('pointerleave', stopDragging);
+
+      gallery.addEventListener('touchstart', (e) => {
+        stopMomentum();
+        const touch = e.touches && e.touches[0];
+        if (!touch) return;
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchStartScrollLeft = gallery.scrollLeft;
+        lastClientX = touch.clientX;
+        lastTs = performance.now();
+        velocityX = 0;
+      }, { passive: true });
+
+      gallery.addEventListener('touchmove', (e) => {
+        const touch = e.touches && e.touches[0];
+        if (!touch) return;
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          e.preventDefault();
+          dragMoved = true;
+          gallery.scrollLeft = touchStartScrollLeft - (deltaX * 1.5);
+          const now = performance.now();
+          const dt = now - lastTs;
+          if (dt > 0) {
+            velocityX = (touch.clientX - lastClientX) / dt;
+            lastClientX = touch.clientX;
+            lastTs = now;
+          }
+        }
+      }, { passive: false });
+
+      gallery.addEventListener('touchend', startMomentum, { passive: true });
+      gallery.addEventListener('touchcancel', stopMomentum, { passive: true });
 
       gallery.addEventListener('click', (e) => {
         if (dragMoved) {
