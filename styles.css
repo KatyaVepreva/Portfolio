@@ -1469,9 +1469,12 @@ body.is-loaded .hero .hero__visual{
   }
 
   .hero__title{
-    font-size:clamp(26px, 7.6vw, 34px);
-    line-height:1.1;
-    max-width:18ch;
+    font-size:clamp(22px, 6.4vw, 30px);
+    line-height:1.12;
+    max-width:100%;
+    letter-spacing:-0.02em;
+    overflow-wrap:anywhere;
+    word-break:break-word;
   }
 
   .section-heading h2,
